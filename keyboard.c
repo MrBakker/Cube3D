@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/06 14:14:21 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/10 02:38:57 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 13:40:33 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,19 @@ static void	move_player(t_cube3d *cube, double angle_delta)
 	new_y = cube->player.y + \
 		sin(normalize_angle(cube->player.dir + angle_delta)) \
 			* MOVE_SPEED * cube->performance.delta_time;
-	if (get_map_object(&cube->map, new_x, new_y) & (EMPTY | PLAYER_START_POS))
+	if (get_map_object(&cube->map, new_x, new_y) & \
+		(EMPTY | PLAYER_START_POS | OPEN_DOOR))
 	{
 		cube->player.x = new_x;
 		cube->player.y = new_y;
 	}
-	else if (get_map_object(&cube->map, new_x, new_y) == WALL)
+	else if (get_map_object(&cube->map, new_x, new_y) & (WALL | CLOSED_DOOR))
 	{
 		if (get_map_object(&cube->map, new_x, cube->player.y) & \
-			(EMPTY | PLAYER_START_POS))
+			(EMPTY | PLAYER_START_POS | OPEN_DOOR))
 			cube->player.x = new_x;
 		if (get_map_object(&cube->map, cube->player.x, new_y) & \
-			(EMPTY | PLAYER_START_POS))
+			(EMPTY | PLAYER_START_POS | OPEN_DOOR))
 			cube->player.y = new_y;
 	}
 }
@@ -44,18 +45,20 @@ int	handle_keypress(int keycode, void *param)
 	t_cube3d	*cube;
 
 	cube = (t_cube3d *)param;
-	if (keycode == KEY_W)
-		cube->inputs.w = 1;
-	if (keycode == KEY_A)
-		cube->inputs.a = 1;
-	if (keycode == KEY_S)
-		cube->inputs.s = 1;
-	if (keycode == KEY_D)
-		cube->inputs.d = 1;
-	if (keycode == KEY_LEFT)
-		cube->inputs.left = 1;
-	if (keycode == KEY_RIGHT)
-		cube->inputs.right = 1;
+	if (keycode == KEY_W && cube->inputs.w == KEY_IS_RELEASED)
+		cube->inputs.w = KEY_IS_PRESSED;
+	if (keycode == KEY_A && cube->inputs.a == KEY_IS_RELEASED)
+		cube->inputs.a = KEY_IS_PRESSED;
+	if (keycode == KEY_S && cube->inputs.s == KEY_IS_RELEASED)
+		cube->inputs.s = KEY_IS_PRESSED;
+	if (keycode == KEY_D && cube->inputs.d == KEY_IS_RELEASED)
+		cube->inputs.d = KEY_IS_PRESSED;
+	if (keycode == KEY_LEFT && cube->inputs.left == KEY_IS_RELEASED)
+		cube->inputs.left = KEY_IS_PRESSED;
+	if (keycode == KEY_RIGHT && cube->inputs.right == KEY_IS_RELEASED)
+		cube->inputs.right = KEY_IS_PRESSED;
+	if (keycode == KEY_SPACE && cube->inputs.space == KEY_IS_RELEASED)
+		cube->inputs.space = KEY_IS_PRESSED;
 	if (keycode == KEY_ESC)
 		big_cube_close(cube);
 	return (SUCCESS);
@@ -67,17 +70,19 @@ int	handle_key_realease(int keycode, void *param)
 
 	cube = (t_cube3d *)param;
 	if (keycode == KEY_W)
-		cube->inputs.w = 0;
+		cube->inputs.w = KEY_IS_RELEASED;
 	if (keycode == KEY_A)
-		cube->inputs.a = 0;
+		cube->inputs.a = KEY_IS_RELEASED;
 	if (keycode == KEY_S)
-		cube->inputs.s = 0;
+		cube->inputs.s = KEY_IS_RELEASED;
 	if (keycode == KEY_D)
-		cube->inputs.d = 0;
+		cube->inputs.d = KEY_IS_RELEASED;
 	if (keycode == KEY_LEFT)
-		cube->inputs.left = 0;
+		cube->inputs.left = KEY_IS_RELEASED;
 	if (keycode == KEY_RIGHT)
-		cube->inputs.right = 0;
+		cube->inputs.right = KEY_IS_RELEASED;
+	if (keycode == KEY_SPACE)
+		cube->inputs.space = KEY_IS_RELEASED;
 	return (SUCCESS);
 }
 

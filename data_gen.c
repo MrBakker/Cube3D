@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/06 17:20:18 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/10 00:39:45 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 15:05:17 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,17 @@
 // Temp function to create a test map
 void	create_test_map(t_cube3d *cube3d)
 {
-	cube3d->map.textures[NORTH] = load_texture_from_name(cube3d, "textures/north.xpm");
-	cube3d->map.textures[EAST] = load_texture_from_name(cube3d, "textures/east.xpm");
-	cube3d->map.textures[SOUTH] = load_texture_from_name(cube3d, "textures/south.xpm");
-	cube3d->map.textures[WEST] = load_texture_from_name(cube3d, "textures/west.xpm");
+	cube3d->map.textures[TINORTH] = load_texture_from_name(cube3d, "textures/north.xpm");
+	cube3d->map.textures[TIEAST] = load_texture_from_name(cube3d, "textures/east.xpm");
+	cube3d->map.textures[TISOUTH] = load_texture_from_name(cube3d, "textures/south.xpm");
+	cube3d->map.textures[TIWEST] = load_texture_from_name(cube3d, "textures/west.xpm");
+	cube3d->map.textures[TIDOOR] = load_texture_from_name(cube3d, "textures/door.xpm");
+	cube3d->map.textures[TIDOOR_WALL] = load_texture_from_name(cube3d, "textures/door_wall.xpm");
 	const int grid_size = 10;
 	int map[10][10] = {
 		{2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 		{2, 1, 1, 1, 2, 2, 1, 1, 1, 2},
-		{2, 2, 2, 1, 1, 1, 4, 1, 1, 2},
+		{2, 8, 2, 1, 1, 8, 4, 1, 1, 2},
 		{2, 1, 2, 1, 2, 2, 1, 1, 1, 2},
 		{2, 1, 2, 1, 1, 2, 1, 1, 1, 2},
 		{2, 1, 2, 2, 1, 1, 1, 2, 1, 2},

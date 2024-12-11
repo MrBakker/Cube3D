@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/07 17:31:49 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/10 01:40:29 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 13:38:18 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ t_ray	gen_horizontal_ray(t_player *player, double angle_delta)
 	ray.step_x = -ray.step_y * a_tan;
 	ray.x_pos = (player->y - ray.y_pos) * a_tan + player->x;
 	ray.is_valid = (ray.angle != 0 && ray.angle != PI);
-	ray.side = (ray.angle > PI) * SOUTH + (ray.angle < PI) * NORTH;
+	ray.side = (ray.angle > PI) * TISOUTH + (ray.angle < PI) * TINORTH;
 	return (ray);
 }
 
@@ -62,23 +62,25 @@ t_ray	gen_vertical_ray(t_player *player, double angle)
 	ray.step_y = -ray.step_x * n_tan;
 	ray.y_pos = (player->x - ray.x_pos) * n_tan + player->y;
 	ray.is_valid = (ray.angle != HALF_PI && ray.angle != ONE_HALF_PI);
-	ray.side = (ray.angle < HALF_PI || ray.angle > ONE_HALF_PI) * WEST + \
-		(ray.angle > HALF_PI && ray.angle < ONE_HALF_PI) * EAST;
+	ray.side = (ray.angle < HALF_PI || ray.angle > ONE_HALF_PI) * TIWEST + \
+		(ray.angle > HALF_PI && ray.angle < ONE_HALF_PI) * TIEAST;
 	return (ray);
 }
 
 void	raycast(t_ray *ray, t_map *map)
 {
 	int	max_search_depth;
+	int	map_object;
 
 	if (!ray->is_valid)
 		return ;
 	max_search_depth = map->map_width + map->map_height;
 	while (max_search_depth--)
 	{
-		if (get_map_object(map, ray->x_pos, ray->y_pos) == WALL)
+		map_object = get_map_object(map, ray->x_pos, ray->y_pos);
+		if (map_object & (WALL | CLOSED_DOOR))
 		{
-			ray->hit = WALL;
+			ray->hit = map_object;
 			ray->dist = distance(ray->origin_x, ray->origin_y, \
 				ray->x_pos, ray->y_pos);
 			return ;

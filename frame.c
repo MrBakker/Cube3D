@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/06 14:38:50 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/10 02:43:21 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 14:10:55 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ int	render_frame(void *param)
 
 	cube = (t_cube3d *)param;
 	fps_counter(cube);
+	handle_doors(cube);
 	handle_keys(cube);
 	rays = shoot_rays(cube);
 	if (!rays)

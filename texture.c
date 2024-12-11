@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/06 16:25:43 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/10 02:43:21 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 15:01:30 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,48 +41,53 @@ static int	get_texture_color(t_texture *texture, double x, double y)
 	return (*(int *)dst);
 }
 
-static void	draw_ceiling(t_image *image, t_cube3d *cube, int max_y, int x)
+t_texture	*get_texture(t_cube3d *cube, t_ray *ray)
 {
-	int	y;
+	const int	x_dir_diff[4] = {0, 1, 0, -1};
+	const int	y_dir_diff[4] = {-1, 0, 1, 0};
 
-	y = -1;
-	while (++y < max_y)
-		put_pixel(image, x, y, cube->map.ceiling_color);
+	if (ray->hit & CLOSED_DOOR)
+		return (cube->map.textures[TIDOOR]);
+	if (get_map_object(&cube->map, ray->x_pos + x_dir_diff[ray->side], \
+		ray->y_pos + y_dir_diff[ray->side]) & OPEN_DOOR)
+		return (cube->map.textures[TIDOOR_WALL]);
+	return (cube->map.textures[ray->side]);
 }
 
-static void	draw_floor(t_image *image, t_cube3d *cube, int min_y, int x)
+static double	calculate_texture_x_pos(t_ray *ray, t_texture *texture)
 {
-	int	y;
+	double	x;
 
-	y = min_y - 1;
-	while (++y < cube->window.height)
-		put_pixel(image, x, y, cube->map.floor_color);
+	if (ray->side == TINORTH || ray->side == TISOUTH)
+		x = fmod(ray->x_pos, TILE_SIZE);
+	else
+		x = fmod(ray->y_pos, TILE_SIZE);
+	if (ray->side == TIEAST || ray->side == TINORTH)
+		x = TILE_SIZE - x;
+	return (x / TILE_SIZE * texture->width);
 }
 
 void	draw_screen_slice(t_image *image, t_ray *r, t_cube3d *cube, int x)
 {
+	t_texture	*tex;
 	double		l_h;
 	double		line_origin;
-	double		texy;
-	double		texx;
+	t_point		texpt;
 	int			y;
 
+	tex = get_texture(cube, r);
 	l_h = (TILE_SIZE * cube->window.height) / \
 		(cos(normalize_angle(r->angle - cube->player.dir)) * r->dist);
-	texx = (r->side == NORTH || r->side == SOUTH) * fmod(r->x_pos, TILE_SIZE) \
-		+ (r->side == EAST || r->side == WEST) * fmod(r->y_pos, TILE_SIZE);
-	if (r->side == EAST || r->side == NORTH)
-		texx = TILE_SIZE - texx;
-	texx = texx / TILE_SIZE * cube->map.textures[r->side]->width;
+	texpt.x = calculate_texture_x_pos(r, tex);
 	line_origin = cube->window.height / 2 - l_h / 2;
 	y = max(0, line_origin + 0.9999999999) - 1;
 	draw_ceiling(image, cube, y + 1, x);
 	while (++y < line_origin + l_h && y < cube->window.height)
 	{
-		texy = (y - line_origin) / l_h * \
-			cube->map.textures[r->side]->height;
+		texpt.y = (y - line_origin) / l_h * \
+			tex->height;
 		put_pixel(image, x, y, \
-			get_texture_color(cube->map.textures[r->side], texx, texy));
+			get_texture_color(tex, texpt.x, texpt.y));
 	}
 	draw_floor(image, cube, y, x);
 }

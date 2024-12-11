@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/10 01:50:13 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/10 02:43:50 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 15:02:31 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@
 #define KEY_A 97
 #define KEY_S 115
 #define KEY_D 100
+#define KEY_SPACE 32
 #define KEY_ESC 65307
 #define KEY_LEFT 65361
 #define KEY_RIGHT 65363
@@ -75,17 +76,21 @@
 #define MOUSE_SENSITIVITY 0.005
 #define INFINITE_MOUSE_GAP 30
 
-// Directions
-#define NORTH 0
-#define EAST 1
-#define SOUTH 2
-#define WEST 3
+// Directions (texture indexes)
+#define TINORTH 0
+#define TIEAST 1
+#define TISOUTH 2
+#define TIWEST 3
+#define TIDOOR 4
+#define TIDOOR_WALL 5
 
 // Map identifiers
 #define UNKNOWN 0
 #define EMPTY 1
 #define WALL 2
 #define PLAYER_START_POS 4
+#define CLOSED_DOOR 8
+#define OPEN_DOOR 16
 
 // Minimap
 #define MINIMAP_SCALE 2
@@ -93,6 +98,11 @@
 #define MINIMAP_BORDER_SIZE 3
 #define MINIMAP_BORDER_OFFSET 10
 #define MINIMAP_PLAYER_SIZE 5
+
+// Keyboard
+#define KEY_IS_RELEASED 0
+#define KEY_IS_PRESSED 1
+#define KEY_IS_WAITING 2
 
 typedef struct s_window
 {
@@ -104,14 +114,15 @@ typedef struct s_window
 
 typedef struct s_inputs
 {
-	int	w;
-	int	a;
-	int	s;
-	int	d;
-	int	left;
-	int	right;
-	int	mouse_x;
-	int	mouse_inf_dir;
+	short	w;
+	short	a;
+	short	s;
+	short	d;
+	short	left;
+	short	right;
+	short	space;
+	short	mouse_x;
+	short	mouse_inf_dir;
 }	t_inputs;
 
 typedef struct s_texture
@@ -129,7 +140,7 @@ typedef struct s_texture
 // map --> a list of rows, so map[y][x]
 typedef struct s_map
 {
-	t_texture	*textures[4];
+	t_texture	*textures[6];
 	int			floor_color;
 	int			ceiling_color;
 	int			map_width;
@@ -210,11 +221,18 @@ typedef struct s_line
 // data_gen.c --> TEMPOARY
 void		create_test_map(t_cube3d *cube3d);
 
+// door.c
+void		handle_doors(t_cube3d *cube);
+
 // exit.c
 void		free_map(t_map *map);
 void		destroy_textures(t_cube3d *cube3d);
 void		destory_window(t_cube3d *cube3d);
 int			big_cube_close(t_cube3d *cube3d);
+
+// floor_ceiling.c
+void		draw_ceiling(t_image *image, t_cube3d *cube, int max_y, int x);
+void		draw_floor(t_image *image, t_cube3d *cube, int min_y, int x);
 
 // fps.c
 void		fps_counter(t_cube3d *cube);
@@ -234,6 +252,7 @@ int			main(int argc, char **argv);
 
 // map.c
 int			get_map_object(t_map *map, double x, double y);
+void		set_map_object(t_map *map, double x, double y, int object);
 int			is_valid_map_position(t_map *map, int x, int y);
 int			is_in_bounds_of_minimap(int x, int y, void *unused);
 

@@ -4,7 +4,7 @@ CC := cc
 DIR := objs/
 EXTRAFLAGS := -Wall -Wextra -Werror -g
 
-SRCS := main.c exit.c keyboard.c frame.c texture.c data_gen.c raycast.c map.c screen.c utils.c minimap.c fps.c mouse.c
+SRCS := main.c exit.c keyboard.c frame.c texture.c data_gen.c raycast.c map.c screen.c utils.c minimap.c fps.c mouse.c door.c floor_ceiling.c
 
 BINS := $(addprefix ${DIR}, ${SRCS:.c=.o})
 

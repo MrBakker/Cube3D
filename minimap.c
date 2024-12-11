@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/08 01:16:42 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/10 02:31:33 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 12:59:04 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ static int	get_map_color_representation(t_map *map, int x, int y)
 		return (rgb_to_int(255, 255, 255));
 	if (map_object == PLAYER_START_POS)
 		return (rgb_to_int(245, 245, 245));
+	if (map_object == OPEN_DOOR)
+		return (rgb_to_int(190, 208, 255));
+	if (map_object == CLOSED_DOOR)
+		return (rgb_to_int(0, 70, 255));
 	return (rgb_to_int(252, 221, 215));
 }
 
