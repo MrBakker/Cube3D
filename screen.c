@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/07 18:25:04 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/10 01:45:49 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 16:07:58 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	draw_circle(t_image *data, t_point p, int r, int color)
 {
 	int		i;
 	int		j;
-	double	dist;
+	float	dist;
 
 	i = 0;
 	while (i < 2 * r)
@@ -52,10 +52,10 @@ void	draw_circle(t_image *data, t_point p, int r, int color)
 void	draw_line(t_image *image, t_line line, \
 	void *payload, int (*bound_check)(int, int, void *))
 {
-	double	dx;
-	double	dy;
-	double	c;
-	double	i;
+	float	dx;
+	float	dy;
+	float	c;
+	float	i;
 	t_point	p;
 
 	dx = line.p2.x - line.p1.x;

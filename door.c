@@ -6,15 +6,15 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/11 12:32:18 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/11 15:06:03 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 16:07:57 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cube3d.h"
 
-static int	is_in_player_door_view(t_player *player, double angle)
+static int	is_in_player_door_view(t_player *player, float angle)
 {
-	double	d;
+	float	d;
 
 	d = normalize_angle(player->dir - angle + PI) - PI;
 	return (d < FOV / D360 * PI && d > -FOV / D360 * PI);

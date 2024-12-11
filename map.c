@@ -6,38 +6,38 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/07 17:54:04 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/11 13:15:24 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 16:07:58 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cube3d.h"
 
-int	get_map_object(t_map *map, double x, double y)
+int	get_map_object(t_map *map, float x, float y)
 {
-	double	coord_x;
-	double	coord_y;
+	float	coord_x;
+	float	coord_y;
 
 	if (x == NAN || y == NAN || x == INFINITY || y == INFINITY || \
 		x == -INFINITY || y == -INFINITY)
 		return (UNKNOWN);
-	coord_x = x / (double)TILE_SIZE;
-	coord_y = y / (double)TILE_SIZE;
+	coord_x = x / (float)TILE_SIZE;
+	coord_y = y / (float)TILE_SIZE;
 	if (coord_x < 0 || (int)coord_x >= map->map_width || coord_y < 0 || \
 		(int)coord_y >= map->map_height)
 		return (UNKNOWN);
 	return (map->map[(int)coord_y][(int)coord_x]);
 }
 
-void	set_map_object(t_map *map, double x, double y, int object)
+void	set_map_object(t_map *map, float x, float y, int object)
 {
-	double	coord_x;
-	double	coord_y;
+	float	coord_x;
+	float	coord_y;
 
 	if (x == NAN || y == NAN || x == INFINITY || y == INFINITY || \
 		x == -INFINITY || y == -INFINITY)
 		return ;
-	coord_x = x / (double)TILE_SIZE;
-	coord_y = y / (double)TILE_SIZE;
+	coord_x = x / (float)TILE_SIZE;
+	coord_y = y / (float)TILE_SIZE;
 	if (coord_x < 0 || (int)coord_x >= map->map_width || coord_y < 0 || \
 		(int)coord_y >= map->map_height)
 		return ;

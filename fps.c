@@ -6,18 +6,18 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/08 02:46:39 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/10 02:30:22 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 17:08:02 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cube3d.h"
 
-static double	get_time(void)
+double	get_time(void)
 {
 	struct timeval	time;
 
 	gettimeofday(&time, NULL);
-	return ((double)time.tv_sec + (double)time.tv_usec / 1000000);
+	return ((double)time.tv_sec + (double)time.tv_usec / 1000000.);
 }
 
 void	fps_counter(t_cube3d *cube)

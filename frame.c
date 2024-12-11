@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/06 14:38:50 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/11 14:10:55 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 18:34:00 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static t_ray	*shoot_rays(t_cube3d *cube)
 {
-	double	angle_delta;
+	float	angle_delta;
 	t_ray	*rays;
 	t_ray	h_ray;
 	t_ray	v_ray;
@@ -26,9 +26,9 @@ static t_ray	*shoot_rays(t_cube3d *cube)
 	i = -1;
 	while (++i < cube->window.width)
 	{
-		angle_delta = asin((i - (double)cube->window.width / 2.0) / \
+		angle_delta = asin((i - (float)cube->window.width / 2.0) / \
 			sqrt(pow(cube->render.depth, 2) + \
-			pow((i - (double)cube->window.width / 2.0), 2)));
+			pow((i - (float)cube->window.width / 2.0), 2)));
 		h_ray = gen_horizontal_ray(&cube->player, angle_delta);
 		v_ray = gen_vertical_ray(&cube->player, angle_delta);
 		raycast(&h_ray, &cube->map);
@@ -61,6 +61,8 @@ static int	update_screen(t_cube3d *cube, t_ray *rays)
 		&img.line_length, &img.endian);
 	draw_walls_3d(&img, rays, cube);
 	draw_minimap(&img, cube, rays);
+	play_xmpgif(cube, &img, cube->visuals.right_arrows);
+	play_xmpgif(cube, &img, cube->visuals.left_arrows);
 	mlx_put_image_to_window(cube->window.mlx, cube->window.win, img.img, 0, 0);
 	mlx_destroy_image(cube->window.mlx, img.img);
 	if (show_fps(cube) == FAILURE)

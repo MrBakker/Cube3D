@@ -6,16 +6,16 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/07 17:31:49 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/11 13:38:18 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 16:07:57 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cube3d.h"
 
-t_ray	gen_horizontal_ray(t_player *player, double angle_delta)
+t_ray	gen_horizontal_ray(t_player *player, float angle_delta)
 {
 	t_ray	ray;
-	double	a_tan;
+	float	a_tan;
 
 	ft_bzero(&ray, sizeof(t_ray));
 	ray.angle = normalize_angle(player->dir + angle_delta);
@@ -39,10 +39,10 @@ t_ray	gen_horizontal_ray(t_player *player, double angle_delta)
 	return (ray);
 }
 
-t_ray	gen_vertical_ray(t_player *player, double angle)
+t_ray	gen_vertical_ray(t_player *player, float angle)
 {
 	t_ray	ray;
-	double	n_tan;
+	float	n_tan;
 
 	ft_bzero(&ray, sizeof(t_ray));
 	ray.angle = normalize_angle(player->dir + angle);

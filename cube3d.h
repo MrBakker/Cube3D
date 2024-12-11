@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/10 01:50:13 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/11 15:02:31 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 18:50:00 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 // Game features
 #define MINIMAP 1
 #define FPS 1
-#define MOUSE 0
+#define MOUSE 1
 
 // Program state
 #define FAILURE 1
@@ -50,6 +50,7 @@
 #define KEY_A 97
 #define KEY_S 115
 #define KEY_D 100
+#define KEY_G 103
 #define KEY_SPACE 32
 #define KEY_ESC 65307
 #define KEY_LEFT 65361
@@ -93,7 +94,7 @@
 #define OPEN_DOOR 16
 
 // Minimap
-#define MINIMAP_SCALE 2
+#define MINIMAP_SCALE 4
 #define MINIMAP_SIZE 150
 #define MINIMAP_BORDER_SIZE 3
 #define MINIMAP_BORDER_OFFSET 10
@@ -103,6 +104,29 @@
 #define KEY_IS_RELEASED 0
 #define KEY_IS_PRESSED 1
 #define KEY_IS_WAITING 2
+
+// Other
+#define XPM_TRANSPARENT -16777216
+
+typedef struct s_point
+{
+	float	x;
+	float	y;
+}	t_point;
+
+typedef struct s_line
+{
+	t_point	p1;
+	t_point	p2;
+	int		color;
+}	t_line;
+
+typedef struct s_transform
+{
+	t_point	pos;
+	float	x_scale;
+	float	y_scale;
+}	t_transform;
 
 typedef struct s_window
 {
@@ -150,9 +174,9 @@ typedef struct s_map
 
 typedef struct s_player
 {
-	double	x;
-	double	y;
-	double	dir;
+	float	x;
+	float	y;
+	float	dir;
 }	t_player;
 
 typedef struct s_peformance
@@ -165,11 +189,30 @@ typedef struct s_peformance
 
 typedef struct s_render
 {
-	double	half_screen_width;
-	double	half_screen_height;
-	double	half_fov;
-	double	depth;
+	float	half_screen_width;
+	float	half_screen_height;
+	float	half_fov;
+	float	depth;
 }	t_render;
+
+typedef struct s_xpmgif
+{
+	t_texture	**frames;
+	t_transform	transform;
+	int			frame_count;
+	double		frame_duration;
+	double		last_frame_time;
+	int			current_frame;
+	int			is_playing;
+	int			width;
+	int			height;
+}	t_xpmgif;
+
+typedef struct s_visuals
+{
+	t_xpmgif	*left_arrows;
+	t_xpmgif	*right_arrows;
+}	t_visuals;
 
 typedef struct s_cube3d
 {
@@ -179,21 +222,22 @@ typedef struct s_cube3d
 	t_map			map;
 	t_performance	performance;
 	t_render		render;
+	t_visuals		visuals;
 }	t_cube3d;
 
 typedef struct s_ray
 {
-	double	angle;
-	double	dist;
+	float	angle;
+	float	dist;
 	int		hit;
 	int		side;
 	int		is_valid;
 	int		origin_x;
 	int		origin_y;
-	double	x_pos;
-	double	y_pos;
-	double	step_x;
-	double	step_y;
+	float	x_pos;
+	float	y_pos;
+	float	step_x;
+	float	step_y;
 }	t_ray;
 
 typedef struct s_image
@@ -205,18 +249,11 @@ typedef struct s_image
 	int		endian;
 }	t_image;
 
-typedef struct s_point
-{
-	double	x;
-	double	y;
-}	t_point;
-
-typedef struct s_line
-{
-	t_point	p1;
-	t_point	p2;
-	int		color;
-}	t_line;
+// clean.c
+void		free_texture(t_cube3d *cube, t_texture *texture);
+void		free_xpmgif(t_cube3d *cube, t_xpmgif *gif);
+void		free_map(t_map *map);
+void		destory_window(t_cube3d *cube3d);
 
 // data_gen.c --> TEMPOARY
 void		create_test_map(t_cube3d *cube3d);
@@ -225,9 +262,6 @@ void		create_test_map(t_cube3d *cube3d);
 void		handle_doors(t_cube3d *cube);
 
 // exit.c
-void		free_map(t_map *map);
-void		destroy_textures(t_cube3d *cube3d);
-void		destory_window(t_cube3d *cube3d);
 int			big_cube_close(t_cube3d *cube3d);
 
 // floor_ceiling.c
@@ -235,6 +269,7 @@ void		draw_ceiling(t_image *image, t_cube3d *cube, int max_y, int x);
 void		draw_floor(t_image *image, t_cube3d *cube, int min_y, int x);
 
 // fps.c
+double		get_time(void);
 void		fps_counter(t_cube3d *cube);
 int			show_fps(t_cube3d *cube);
 double		get_time_diff(t_cube3d *cube);
@@ -251,8 +286,8 @@ int			handle_keys(t_cube3d *cube);
 int			main(int argc, char **argv);
 
 // map.c
-int			get_map_object(t_map *map, double x, double y);
-void		set_map_object(t_map *map, double x, double y, int object);
+int			get_map_object(t_map *map, float x, float y);
+void		set_map_object(t_map *map, float x, float y, int object);
 int			is_valid_map_position(t_map *map, int x, int y);
 int			is_in_bounds_of_minimap(int x, int y, void *unused);
 
@@ -263,8 +298,8 @@ void		draw_minimap(t_image *image, t_cube3d *cube, t_ray *rays);
 int			handle_mouse_move(int x, int y, void *param);
 
 // raycast.c
-t_ray		gen_horizontal_ray(t_player *player, double angle_delta);
-t_ray		gen_vertical_ray(t_player *player, double angle);
+t_ray		gen_horizontal_ray(t_player *player, float angle_delta);
+t_ray		gen_vertical_ray(t_player *player, float angle);
 void		raycast(t_ray *ray, t_map *map);
 void		print_ray(t_ray *ray);
 
@@ -280,10 +315,19 @@ void		draw_ray_2d(t_image *image, t_ray *ray, t_window *window);
 t_texture	*load_texture_from_name(t_cube3d *cube3d, char *name);
 void		draw_screen_slice(t_image *image, t_ray *ray, t_cube3d *cube, \
 				int x);
+void		draw_texture_to_screen(t_cube3d *cube, t_image *image, \
+				t_texture *texture, t_transform transform);
 
 // utils.c
-double		min(double a, double b);
+float		min(float a, float b);
 int			max(int a, int b);
 int			rgb_to_int(int r, int g, int b);
-double		distance(double x1, double y1, double x2, double y2);
-double		normalize_angle(double angle);
+float		distance(float x1, float y1, float x2, float y2);
+float		normalize_angle(float angle);
+
+// xpmgif.c
+t_xpmgif	*load_xpmgif(t_cube3d *cube3d, char *base_path, \
+				int frame_count, double frame_duration);
+void		play_xmpgif(t_cube3d *cube, t_image *image, t_xpmgif *gif);
+void		xmpgif_set_transform(t_xpmgif *gif, t_point pos, \
+				int width, int height);

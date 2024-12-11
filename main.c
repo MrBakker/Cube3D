@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/06 14:14:24 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/10 02:39:42 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 18:57:43 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,28 @@ static void	calculate_render_data(t_render *render)
 		sin(render->half_fov), 2) - pow((render->half_screen_width), 2));
 }
 
+static int	fetch_visuals(t_cube3d *cube)
+{
+	float	direction_size;
+
+	direction_size = cube->window.height / 10.;
+	cube->visuals.right_arrows = \
+		load_xpmgif(cube, "textures/rightarrows/", 10, 0.05);
+	if (!cube->visuals.right_arrows)
+		return (FAILURE);
+	xmpgif_set_transform(cube->visuals.right_arrows, (t_point) \
+		{cube->window.width - direction_size, cube->window.height - \
+		direction_size}, direction_size, direction_size);
+	cube->visuals.left_arrows = \
+		load_xpmgif(cube, "textures/leftarrow/", 10, 0.05);
+	if (!cube->visuals.left_arrows)
+		return (free_xpmgif(cube, cube->visuals.right_arrows), FAILURE);
+	xmpgif_set_transform(cube->visuals.left_arrows, (t_point) \
+		{0, cube->window.height - direction_size}, \
+		direction_size, direction_size);
+	return (SUCCESS);
+}
+
 int	main(int argc, char **argv)
 {
 	t_cube3d	cube3d;
@@ -61,9 +83,12 @@ int	main(int argc, char **argv)
 	// 		RED, DEFAULT), FAILURE);
 	if (create_window(&(cube3d.window)) == FAILURE)
 		return (ft_printf("%sError:%s failed to create the window\n", \
-			RED, DEFAULT), FAILURE);
-	setup_hooks(&cube3d);
+			RED, DEFAULT), big_cube_close(&cube3d), FAILURE);
 	create_test_map(&cube3d);
+	if (fetch_visuals(&cube3d) == FAILURE)
+		return (ft_printf("%sError:%s failed to load the animated sprites\n", \
+		RED, DEFAULT), big_cube_close(&cube3d), FAILURE);
+	setup_hooks(&cube3d);
 	calculate_render_data(&cube3d.render);
 	mlx_loop(cube3d.window.mlx);
 }

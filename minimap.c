@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/08 01:16:42 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/11 12:59:04 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 16:07:58 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,8 @@ static void	draw_border(t_image *image)
 static void	draw_fov(t_image *image, t_cube3d *cube, t_ray *rays)
 {
 	int		i;
-	double	end_x;
-	double	end_y;
+	float	end_x;
+	float	end_y;
 
 	i = -1;
 	while (++i < cube->window.width && rays)

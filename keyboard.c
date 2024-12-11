@@ -6,16 +6,16 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/06 14:14:21 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/11 13:40:33 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 17:56:48 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cube3d.h"
 
-static void	move_player(t_cube3d *cube, double angle_delta)
+static void	move_player(t_cube3d *cube, float angle_delta)
 {
-	double	new_x;
-	double	new_y;
+	float	new_x;
+	float	new_y;
 
 	new_x = cube->player.x + \
 		cos(normalize_angle(cube->player.dir + angle_delta)) \
@@ -90,6 +90,8 @@ int	handle_keys(t_cube3d *cube)
 {
 	cube->player.dir = normalize_angle(cube->player.dir + ROTATE_SPEED * \
 		cube->performance.delta_time * cube->inputs.mouse_inf_dir);
+	cube->visuals.right_arrows->is_playing = (cube->inputs.mouse_inf_dir == 1);
+	cube->visuals.left_arrows->is_playing = (cube->inputs.mouse_inf_dir == -1);
 	if (cube->inputs.left)
 		cube->player.dir = normalize_angle(cube->player.dir - \
 			ROTATE_SPEED * cube->performance.delta_time);

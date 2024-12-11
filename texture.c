@@ -6,7 +6,7 @@
 /*   By: jbakker <jbakker@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/06 16:25:43 by jbakker       #+#    #+#                 */
-/*   Updated: 2024/12/11 15:01:30 by jbakker       ########   odam.nl         */
+/*   Updated: 2024/12/11 18:38:34 by jbakker       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,15 +32,6 @@ t_texture	*load_texture_from_name(t_cube3d *cube3d, char *name)
 	return (texture);
 }
 
-static int	get_texture_color(t_texture *texture, double x, double y)
-{
-	char	*dst;
-
-	dst = texture->addr + (int)((int)y * texture->line_length + \
-		(int)x * (texture->bits_per_pixel / 8));
-	return (*(int *)dst);
-}
-
 t_texture	*get_texture(t_cube3d *cube, t_ray *ray)
 {
 	const int	x_dir_diff[4] = {0, 1, 0, -1};
@@ -54,9 +45,9 @@ t_texture	*get_texture(t_cube3d *cube, t_ray *ray)
 	return (cube->map.textures[ray->side]);
 }
 
-static double	calculate_texture_x_pos(t_ray *ray, t_texture *texture)
+static float	calculate_texture_x_pos(t_ray *ray, t_texture *texture)
 {
-	double	x;
+	float	x;
 
 	if (ray->side == TINORTH || ray->side == TISOUTH)
 		x = fmod(ray->x_pos, TILE_SIZE);
@@ -70,24 +61,53 @@ static double	calculate_texture_x_pos(t_ray *ray, t_texture *texture)
 void	draw_screen_slice(t_image *image, t_ray *r, t_cube3d *cube, int x)
 {
 	t_texture	*tex;
-	double		l_h;
-	double		line_origin;
+	float		line_height;
+	float		line_origin;
 	t_point		texpt;
 	int			y;
 
 	tex = get_texture(cube, r);
-	l_h = (TILE_SIZE * cube->window.height) / \
+	line_height = (TILE_SIZE * cube->window.height) / \
 		(cos(normalize_angle(r->angle - cube->player.dir)) * r->dist);
 	texpt.x = calculate_texture_x_pos(r, tex);
-	line_origin = cube->window.height / 2 - l_h / 2;
+	line_origin = cube->window.height / 2 - line_height / 2;
 	y = max(0, line_origin + 0.9999999999) - 1;
 	draw_ceiling(image, cube, y + 1, x);
-	while (++y < line_origin + l_h && y < cube->window.height)
+	while (++y < line_origin + line_height && y < cube->window.height)
 	{
-		texpt.y = (y - line_origin) / l_h * \
-			tex->height;
-		put_pixel(image, x, y, \
-			get_texture_color(tex, texpt.x, texpt.y));
+		texpt.y = (y - line_origin) / line_height * tex->height;
+		*(unsigned int *)(image->addr + (y * image->line_length + \
+			x * (image->bits_per_pixel >> 3))) = *(int *)(tex->addr + \
+			(int)texpt.y * tex->line_length + \
+			(int)texpt.x * (tex->bits_per_pixel >> 3));
 	}
 	draw_floor(image, cube, y, x);
+}
+
+void	draw_texture_to_screen(t_cube3d *cube, t_image *image, \
+	t_texture *texture, t_transform transform)
+{
+	int	color;
+	int	x;
+	int	y;
+	int	tx;
+	int	ty;
+
+	y = -1;
+	while (++y < texture->height)
+	{
+		x = -1;
+		while (++x < texture->width)
+		{
+			tx = transform.pos.x + x * transform.x_scale;
+			ty = transform.pos.y + y * transform.y_scale;
+			if (tx < 0 || tx >= cube->window.width || ty < 0 || \
+				ty >= cube->window.height)
+				continue ;
+			color = *(unsigned int *)(texture->addr + y * texture->line_length \
+				+ x * (texture->bits_per_pixel >> 3));
+			if (color != XPM_TRANSPARENT)
+				put_pixel(image, tx, ty, color);
+		}
+	}
 }
